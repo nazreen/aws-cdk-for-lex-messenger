@@ -1,5 +1,9 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: 'A messaging webhook endpoint that integrates with a Lambda that ultimately uses Lex to process and respond to user input.'
+Parameters:
+  WebhookHandlerName:
+    Type: "String"
+    Default: "lex-poc"
 Resources:
   Api:
     Type: "AWS::ApiGateway::RestApi"
@@ -14,18 +18,17 @@ Resources:
         Integration:
           IntegrationHttpMethod: "POST"
           Type: "LAMBDA"
-          Uri: !Sub
-            - "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations"
-            - lambdaArn: !GetAtt "lambdaFunction.Arn"
-        ResourceId: !GetAtt "apiGateway.RootResourceId"
-        RestApiId: !Ref "apiGateway"
+          Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebhookHandler.Arn}/invocations"
+            # - lambdaArn: !GetAtt "WebhookHandler.Arn"
+        ResourceId: !GetAtt "Api.RootResourceId"
+        RestApiId: !Ref "Api"
   apiGatewayDeployment:
     Type: "AWS::ApiGateway::Deployment"
     DependsOn:
       - "apiGatewayRootMethod"
     Properties:
-      RestApiId: !Ref "apiGateway"
-      StageName: !Ref "apiGatewayStageName"
+      RestApiId: !Ref "Api"
+      StageName: "test"
   WebhookHandler:
     Type: "AWS::Lambda::Function"
     Properties:
@@ -40,7 +43,7 @@ Resources:
               'statusCode': 200
             }
       Description: "My function"
-      FunctionName: "lex-poc"
+      FunctionName: !Ref WebhookHandlerName
       Handler: "index.handler"
       MemorySize: 128
       Role: !GetAtt "lambdaIAMRole.Arn"
@@ -50,10 +53,9 @@ Resources:
     Type: "AWS::Lambda::Permission"
     Properties:
       Action: "lambda:InvokeFunction"
-      FunctionName: !GetAtt "lambdaFunction.Arn"
+      FunctionName: !GetAtt "WebhookHandler.Arn"
       Principal: "apigateway.amazonaws.com"
-      SourceArn: !Sub
-        - "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${apiGateway}/*/POST/"
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${Api}/*/POST/"
   lambdaIAMRole:
     Type: "AWS::IAM::Role"
     Properties:
@@ -76,11 +78,10 @@ Resources:
                   - "logs:PutLogEvents"
                 Effect: "Allow"
                 Resource:
-                  - !Sub
-                    - "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${lambdaFunctionName}:*"
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${WebhookHandlerName}:*"
           PolicyName: "lambda"
   lambdaLogGroup:
     Type: "AWS::Logs::LogGroup"
     Properties:
-      LogGroupName: !Sub "/aws/lambda/${lambdaFunctionName}"
+      LogGroupName: !Sub "/aws/lambda/${WebhookHandlerName}"
       RetentionInDays: 90
