@@ -9,7 +9,6 @@ Others:
 - Facebook app
 - Messenger product under the Facebook app
 
-
 Steps:
 - Create Facebook page
 - Create Facebook app
@@ -17,7 +16,7 @@ Steps:
 - link product to created page
 
 
-
 Todo:
-- template
-    - change AWS_PROXY
+- include source code for handler
+- test that API integration works with actual code
+- include Lex resource
