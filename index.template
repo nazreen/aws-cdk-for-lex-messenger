@@ -17,9 +17,8 @@ Resources:
         HttpMethod: "POST"
         Integration:
           IntegrationHttpMethod: "POST"
-          Type: "LAMBDA"
+          Type: "AWS_PROXY"
           Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebhookHandler.Arn}/invocations"
-            # - lambdaArn: !GetAtt "WebhookHandler.Arn"
         ResourceId: !GetAtt "Api.RootResourceId"
         RestApiId: !Ref "Api"
   apiGatewayDeployment:
