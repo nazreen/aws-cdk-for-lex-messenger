@@ -2,15 +2,15 @@ import apigateway = require('@aws-cdk/aws-apigateway');
 import cdk = require('@aws-cdk/core');
 import lambda = require('@aws-cdk/aws-lambda');
 import iam = require('@aws-cdk/aws-iam');
-import mrptValue = require('./mapping_request_template')
+import mrptValue from './mapping_request_template';
 
-// set this
-const ACCOUNT_ID = "029319648651"
+// currently Lex is supported in a limited number of regions
 const LEX_REGION = "us-east-1"
 
 export class CdkStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+    const ACCOUNT_ID = cdk.Stack.of(this).account
 
     const api = new apigateway.RestApi(this, 'lex-poc-api')
     const webhookResource = api.root.addResource('webhook');
