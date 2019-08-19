@@ -11,7 +11,7 @@ def main(event, context):
     bot_name = 'SubmitComplaint'
     try:
         log.info('Input event: %s', event)
-        if event['RequestType'] == 'Create':
+        if event['RequestType'] in ['Create','Update']:
             log.info('Before lex bot creation')
             lex_response = lex.put_bot(
                 name=bot_name,
@@ -33,12 +33,12 @@ def main(event, context):
             lex.delete_bot(name=bot_name)
 
         # Do the thing
-        message = event['ResourceProperties']['Message']
-        attributes = {
-            'Response': 'You said "%s"' % lex_response['name']
+        # message = event['ResourceProperties']['Message']
+        output_attributes = {
+            'Response': 'You said'
         }
 
-        cfnresponse.send(event, context, cfnresponse.SUCCESS, attributes, physical_id)
+        cfnresponse.send(event, context, cfnresponse.SUCCESS, output_attributes, physical_id)
     except Exception as e:
         log.exception(e)
         # cfnresponse's error message is always "see CloudWatch"
