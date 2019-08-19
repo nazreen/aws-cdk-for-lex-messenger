@@ -1,8 +1,6 @@
 # Todo
-- ensure request template works
-- set lambda to use env variables
-- upload to git
-- send to shazli
+- custom resource for lex (us-east-1 region)
+- specify lex resource for iam policy
 
 # Problem statement
 For chatbot integrations, sometimes, you need to do some preprocessing with a message before it hits Lex. For example, you might be dealing with informal language and need to normalise the message using an external API before sending it over to Lex.
@@ -16,6 +14,7 @@ Setup a custom webhook to be supplied to the chat platform. The webhook will be 
 # Run
 
 `cdk deploy`
+then, set up the required environment variables
 
 # Components
 ## AWS
@@ -46,6 +45,7 @@ Setup a custom webhook to be supplied to the chat platform. The webhook will be 
 - modify the lambda code.
   - copy in the page token
   - set your own verification token. this can be any string. you paste the same one later when you integrate your app in the webhook section.
+- fill in the required environment variables. refer to the `CONFIG` object in the lambda handler code.
 ## Create API 
 - create resource. name it 'webhook'
 - create GET method for that resource. select Lambda integration without Lambda proxy integration
