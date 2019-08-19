@@ -5,17 +5,14 @@ import cdk = require('@aws-cdk/core');
 
 import fs = require('fs');
 
-export interface MyCustomResourceProps {
-    /**
-     * Message to echo
-     */
-    message: string;
+export interface IPropsForLambda {
+    stackName: string;
 }
 
 export class MyCustomResource extends cdk.Construct {
     public readonly response: string;
 
-    constructor(scope: cdk.Construct, id: string, props: MyCustomResourceProps, role: iam.Role) {
+    constructor(scope: cdk.Construct, id: string, lambdaProps: IPropsForLambda, role: iam.Role) {
         super(scope, id);
 
         const resource = new cfn.CustomResource(this, 'Resource', {
@@ -27,7 +24,7 @@ export class MyCustomResource extends cdk.Construct {
                 runtime: lambda.Runtime.PYTHON_3_7,
                 role
             })),
-            properties: props,
+            properties: lambdaProps,
             resourceType: 'Custom::LexBot'
         });
 
