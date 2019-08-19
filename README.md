@@ -1,5 +1,7 @@
 # Todo
-- custom resource for lex (us-east-1 region)
+- separate custom resource for lex intent (proper delete)
+- separate custom resource for lex bot (proper delete)
+- include stack name in lex bot name
 - specify lex resource for iam policy
 
 # Problem statement
