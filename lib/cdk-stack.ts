@@ -3,6 +3,7 @@ import cdk = require('@aws-cdk/core');
 import lambda = require('@aws-cdk/aws-lambda');
 import iam = require('@aws-cdk/aws-iam');
 import mrptValue from './mapping_request_template';
+import { MyCustomResource } from './my-custom-resource'; 3
 
 // currently Lex is supported in a limited number of regions
 const LEX_REGION = "us-east-1"
@@ -56,5 +57,18 @@ export class CdkStack extends cdk.Stack {
     const webhookIntegration = new apigateway.LambdaIntegration(webhookHandler, webhookIntegrationOptions)
     webhookResource.addMethod('GET', webhookIntegration)
     webhookResource.addMethod('POST', webhookIntegration)
+
+    /*
+     Custom Resource
+    */
+    const resource = new MyCustomResource(this, 'DemoResource', {
+      message: 'CustomResource says hello',
+    });
+
+    // Publish the custom resource output
+    new cdk.CfnOutput(this, 'ResponseMessage', {
+      description: 'The message that came back from the Custom Resource',
+      value: resource.response
+    });
   }
 }

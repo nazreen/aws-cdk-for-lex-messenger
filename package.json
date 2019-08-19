@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@aws-cdk/aws-apigateway": "^1.4.0",
+    "@aws-cdk/aws-cloudformation": "^1.4.0",
     "@aws-cdk/aws-iam": "^1.4.0",
     "@aws-cdk/aws-lambda": "^1.4.0",
     "@aws-cdk/core": "^1.4.0"
