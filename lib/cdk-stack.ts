@@ -1,9 +1,12 @@
 import apigateway = require('@aws-cdk/aws-apigateway');
 import cdk = require('@aws-cdk/core');
 import lambda = require('@aws-cdk/aws-lambda');
+import iam = require('@aws-cdk/aws-iam');
+import mrptValue = require('./mapping_request_template')
 
-const mrptValue = "#set($allParams = $input.params())\r\n{\r\n\"body-json\" : $input.json('$'),\r\n\"params\" : {\r\n#foreach($type in $allParams.keySet())\r\n    #set($params = $allParams.get($type))\r\n\"$type\" : {\r\n    #foreach($paramName in $params.keySet())\r\n    \"$paramName\" : \"$util.escapeJavaScript($params.get($paramName))\"\r\n        #if($foreach.hasNext),#end\r\n    #end\r\n}\r\n    #if($foreach.hasNext),#end\r\n#end\r\n},\r\n\"stage-variables\" : {\r\n#foreach($key in $stageVariables.keySet())\r\n\"$key\" : \"$util.escapeJavaScript($stageVariables.get($key))\"\r\n    #if($foreach.hasNext),#end\r\n#end\r\n},\r\n\"context\" : {\r\n    \"account-id\" : \"$context.identity.accountId\",\r\n    \"api-id\" : \"$context.apiId\",\r\n    \"api-key\" : \"$context.identity.apiKey\",\r\n    \"authorizer-principal-id\" : \"$context.authorizer.principalId\",\r\n    \"caller\" : \"$context.identity.caller\",\r\n    \"cognito-authentication-provider\" : \"$context.identity.cognitoAuthenticationProvider\",\r\n    \"cognito-authentication-type\" : \"$context.identity.cognitoAuthenticationType\",\r\n    \"cognito-identity-id\" : \"$context.identity.cognitoIdentityId\",\r\n    \"cognito-identity-pool-id\" : \"$context.identity.cognitoIdentityPoolId\",\r\n    \"http-method\" : \"$context.httpMethod\",\r\n    \"stage\" : \"$context.stage\",\r\n    \"source-ip\" : \"$context.identity.sourceIp\",\r\n    \"user\" : \"$context.identity.user\",\r\n    \"user-agent\" : \"$context.identity.userAgent\",\r\n    \"user-arn\" : \"$context.identity.userArn\",\r\n    \"request-id\" : \"$context.requestId\",\r\n    \"resource-id\" : \"$context.resourceId\",\r\n    \"resource-path\" : \"$context.resourcePath\"\r\n    }\r\n}\r\n"
-
+// set this
+const ACCOUNT_ID = "029319648651"
+const LEX_REGION = "us-east-1"
 
 export class CdkStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
@@ -12,13 +15,30 @@ export class CdkStack extends cdk.Stack {
     const api = new apigateway.RestApi(this, 'lex-poc-api')
     const webhookResource = api.root.addResource('webhook');
 
+    const lexPolicyStatement = new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      resources: [`arn:aws:lex:${LEX_REGION}:${ACCOUNT_ID}:bot:*:*`],
+      actions: ['lex:PostText']
+    })
+
+    const policyDocument = new iam.PolicyDocument()
+    policyDocument.addStatements(lexPolicyStatement)
+    const roleProps = {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      inlinePolicies: {
+        'lex-post-text': policyDocument
+      }
+    }
+    const webhookHandlerRole = new iam.Role(this, 'lambda-role-with-lex', roleProps)
+
     const webhookHandler = new lambda.Function(this, 'incoming-message-handler', {
       code: lambda.Code.asset('lambda'),
       handler: 'index.handler',
       timeout: cdk.Duration.seconds(3),
       runtime: lambda.Runtime.NODEJS_10_X,
+      role: webhookHandlerRole
     });
-    // TODO: create integration
+
     const webhookIntegrationOptions = {
       proxy: false,
       passthroughBehavior: apigateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
