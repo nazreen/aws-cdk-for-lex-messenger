@@ -10,6 +10,13 @@ For chatbot integrations, sometimes, you need to do some preprocessing with a me
 # Solution overview
 Setup a custom webhook to be supplied to the chat platform. The webhook will be handled by an API Gateway endpoint that is integrated with a Lambda function. In that Lambda function, Lex is called, amongst other things.
 
+# Pre-requisites
+- cdk
+
+# Run
+
+`cdk deploy`
+
 # Components
 ## AWS
 - AWS::ApiGateway::RestApi
