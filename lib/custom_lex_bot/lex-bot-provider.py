@@ -13,6 +13,7 @@ def main(event, context):
         physical_id = bot_name
         bot = None
         log.info('Input event: %s', event)
+        output_attributes = {}
         
         try:
             # check if already exists
@@ -20,6 +21,9 @@ def main(event, context):
             # if already exists, call CREATE does update,  DELETE does delete
             if event['RequestType'] in ['Create','Update']:
                 bot = lex.put_bot(name=bot_name, checksum=bot['checksum'])
+                output_attributes = {
+                    'name': bot['name']
+                }
             elif event['RequestType'] == 'Delete':
                 lex.delete_bot(name=bot_name)
                 output_attributes = {}
@@ -27,12 +31,12 @@ def main(event, context):
             # if resource does not yet exist, call CREATE does create or DELETE skips delete
             if event['RequestType'] in ['Create','Update']:
                 bot = lex.put_bot(name=bot_name,locale='en-US',childDirected=False)
+                output_attributes = {
+                    'name': bot['name']
+                }
             elif event['RequestType'] == 'Delete':
                 pass
             
-        output_attributes = {
-            'name': bot['name']
-        }
             
         cfnresponse.send(event, context, cfnresponse.SUCCESS, output_attributes, physical_id)
     except Exception as e:
