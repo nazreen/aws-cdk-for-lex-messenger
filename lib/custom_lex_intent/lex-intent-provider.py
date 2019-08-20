@@ -11,22 +11,28 @@ def main(event, context):
     intent = None
     try:
         log.info('Input event: %s', event)
-        if event['RequestType'] in ['Create','Update']:
-            try:
-                # check if already exists
-                intent = lex.get_intent(name=intent_name,version='$LATEST')
-                # if already exists, attempt updated
-                intent = lex.put_intent(name=intent_name, checksum=intent['checksum'])
-            except:
-                # if not yet exist, create
-                intent = lex.put_intent(name=intent_name)
-            output_attributes = {
-                'name': intent['name']
-            }
-        elif event['RequestType'] == 'Delete':
-            lex.delete_intent(name=intent_name)
-            output_attributes = {}
+
         
+        try:
+            # check if already exists
+            intent = lex.get_intent(name=intent_name,version='$LATEST')
+            # if already exists, call CREATE does update,  DELETE does delete
+            if event['RequestType'] in ['Create','Update']:
+                intent = lex.put_intent(name=intent_name, checksum=intent['checksum'])
+            elif event['RequestType'] == 'Delete':
+                lex.delete_intent(name=intent_name)
+                output_attributes = {}
+        except:
+            # if resource does not yet exist, call CREATE does create or DELETE skips delete
+            if event['RequestType'] in ['Create','Update']:
+                intent = lex.put_intent(name=intent_name)
+            elif event['RequestType'] == 'Delete':
+                pass
+            
+        output_attributes = {
+            'name': intent['name']
+        }
+            
         cfnresponse.send(event, context, cfnresponse.SUCCESS, output_attributes, physical_id)
     except Exception as e:
         log.exception(e)
