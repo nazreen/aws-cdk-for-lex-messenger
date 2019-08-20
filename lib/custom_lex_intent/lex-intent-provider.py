@@ -5,22 +5,21 @@ def main(event, context):
     lex = boto3.client('lex-models', region_name='us-east-1')
     log.getLogger().setLevel(log.INFO)
     # create intent
-    physical_id = 'custom-resource-lex-intent'
-
+    
     intent_name = 'Complain'
+    physical_id = intent_name
     intent = None
     try:
         log.info('Input event: %s', event)
         if event['RequestType'] in ['Create','Update']:
-            intent = lex.put_intent(name=intent_name)
-            # try:
-            #     # check if already exists
-            #     intent = lex.get_intent(name=intent_name,version='$LATEST')
-            #     # if already exists, attempt updated
-            #     intent = lex.put_intent(name=intent_name, checksum=intent['checksum'])
-            # except:
-            #     # if not yet exist, create
-            #     intent = lex.put_intent(name=intent_name)
+            try:
+                # check if already exists
+                intent = lex.get_intent(name=intent_name,version='$LATEST')
+                # if already exists, attempt updated
+                intent = lex.put_intent(name=intent_name, checksum=intent['checksum'])
+            except:
+                # if not yet exist, create
+                intent = lex.put_intent(name=intent_name)
             output_attributes = {
                 'name': intent['name']
             }
