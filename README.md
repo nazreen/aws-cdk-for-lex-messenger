@@ -1,8 +1,8 @@
 # Todo
-- separate custom resource for lex intent (proper delete)
 - separate custom resource for lex bot (proper delete)
 - include stack name in lex bot name
 - specify lex resource for iam policy
+- consider https://github.com/aws-cloudformation/custom-resource-helper
 
 # Problem statement
 For chatbot integrations, sometimes, you need to do some preprocessing with a message before it hits Lex. For example, you might be dealing with informal language and need to normalise the message using an external API before sending it over to Lex.
