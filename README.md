@@ -1,6 +1,6 @@
 # Todo
 - FIX: on delete, bot is not deleted. fix the python provider handler for lex bot.
-- specify lex resource for iam policy
+- separate policies. 1 for webhandler, 1 for lambda providers.
 - consider https://github.com/aws-cloudformation/custom-resource-helper
 
 # Problem statement
