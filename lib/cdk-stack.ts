@@ -73,7 +73,7 @@ export class CdkStack extends cdk.Stack {
     //   stackName: STACK_NAME
     // };
     // const resource = new MyCustomResource(this, 'custom-resource-lex-bot', propsForLambdaProvider, webhookHandlerRole);
-    const lexIntent = new CustomLexIntent(this, 'custom-lex-intent', { stackName: STACK_NAME }, webhookHandlerRole)
+    const lexIntent = new CustomLexIntent(this, 'CustomLexIntent', { stackName: STACK_NAME }, webhookHandlerRole)
 
     // Publish the custom resource output
     // new cdk.CfnOutput(this, 'ResponseMessage', {
@@ -81,7 +81,7 @@ export class CdkStack extends cdk.Stack {
     //   value: resource.response
     // });
 
-    new cdk.CfnOutput(this, 'lex-intent', {
+    new cdk.CfnOutput(this, 'LexIntentName', {
       description: 'The name of the lex intent',
       value: lexIntent.name
     });
