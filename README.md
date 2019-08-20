@@ -1,6 +1,7 @@
 # Todo
 - FIX: on delete, bot is not deleted. fix the python provider handler for lex bot.
 - separate policies. 1 for webhandler, 1 for lambda providers.
+- update this doc to reflect the now automated lex bot creation
 - consider https://github.com/aws-cloudformation/custom-resource-helper
 
 # Problem statement
