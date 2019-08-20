@@ -5,6 +5,7 @@ import iam = require('@aws-cdk/aws-iam');
 import mrptValue from './mapping_request_template';
 // import { MyCustomResource } from './my-custom-resource';
 import { CustomLexIntent } from './custom_lex_intent/lex-intent';
+import { CustomLexBot } from './custom_lex_bot/lex-bot';
 
 // currently Lex is supported in a limited number of regions
 const LEX_REGION = "us-east-1"
@@ -69,22 +70,18 @@ export class CdkStack extends cdk.Stack {
     /*
      Custom Resource
     */
-    // const propsForLambdaProvider = {
-    //   stackName: STACK_NAME
-    // };
-    // const resource = new MyCustomResource(this, 'custom-resource-lex-bot', propsForLambdaProvider, webhookHandlerRole);
     const squishedStackName = STACK_NAME.replace(/-/g, "")
     const lexIntent = new CustomLexIntent(this, 'CustomLexIntent', { IntentName: `${squishedStackName}Complain` }, webhookHandlerRole)
 
-    // Publish the custom resource output
-    // new cdk.CfnOutput(this, 'ResponseMessage', {
-    //   description: 'The message that came back from the Custom Resource',
-    //   value: resource.response
-    // });
+    const lexBot = new CustomLexBot(this, 'CustomLexBot', { BotName: `${squishedStackName}Complain` }, webhookHandlerRole)
 
     new cdk.CfnOutput(this, 'LexIntentName', {
       description: 'The name of the lex intent',
       value: lexIntent.name
+    });
+    new cdk.CfnOutput(this, 'LexBotName', {
+      description: 'The name of the lex bot',
+      value: lexBot.name
     });
   }
 }
