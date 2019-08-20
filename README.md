@@ -1,6 +1,5 @@
 # Todo
-- separate custom resource for lex bot (proper delete)
-- include stack name in lex bot name
+- FIX: on delete, bot is not deleted. fix the python provider handler for lex bot.
 - specify lex resource for iam policy
 - consider https://github.com/aws-cloudformation/custom-resource-helper
 

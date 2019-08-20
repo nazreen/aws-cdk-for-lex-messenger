@@ -2,35 +2,41 @@ def main(event, context):
     import logging as log
     import cfnresponse
     import boto3
-    # create intent
+    lex = boto3.client('lex-models', region_name='us-east-1')
+    log.getLogger().setLevel(log.INFO)
+
     try:
         lex = boto3.client('lex-models', region_name='us-east-1')
         log.getLogger().setLevel(log.INFO)
         
-        intent_name = event['ResourceProperties']['IntentName']
-        physical_id = intent_name
-        intent = None
+        bot_name = event['ResourceProperties']['BotName']
+        physical_id = bot_name
+        bot = None
         log.info('Input event: %s', event)
+        output_attributes = {}
         
         try:
             # check if already exists
-            intent = lex.get_intent(name=intent_name,version='$LATEST')
+            bot = lex.get_bot(name=bot_name,version='$LATEST')
             # if already exists, call CREATE does update,  DELETE does delete
             if event['RequestType'] in ['Create','Update']:
-                intent = lex.put_intent(name=intent_name, checksum=intent['checksum'])
+                bot = lex.put_bot(name=bot_name, checksum=bot['checksum'])
+                output_attributes = {
+                    'name': bot['name']
+                }
             elif event['RequestType'] == 'Delete':
-                lex.delete_intent(name=intent_name)
+                lex.delete_bot(name=bot_name)
                 output_attributes = {}
         except:
             # if resource does not yet exist, call CREATE does create or DELETE skips delete
             if event['RequestType'] in ['Create','Update']:
-                intent = lex.put_intent(name=intent_name)
+                bot = lex.put_bot(name=bot_name,locale='en-US',childDirected=False)
+                output_attributes = {
+                    'name': bot['name']
+                }
             elif event['RequestType'] == 'Delete':
                 pass
             
-        output_attributes = {
-            'name': intent['name']
-        }
             
         cfnresponse.send(event, context, cfnresponse.SUCCESS, output_attributes, physical_id)
     except Exception as e:

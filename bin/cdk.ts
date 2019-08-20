@@ -3,4 +3,5 @@ import cdk = require('@aws-cdk/core');
 import { CdkStack } from '../lib/cdk-stack';
 
 const app = new cdk.App();
-new CdkStack(app, 'lex-messenger-poc-16');
+const suffix = ''
+new CdkStack(app, 'lex-messenger-poc' + suffix);
