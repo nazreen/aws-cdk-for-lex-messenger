@@ -81,7 +81,7 @@ export class CdkStack extends cdk.Stack {
     //   value: resource.response
     // });
 
-    new cdk.CfnOutput(this, 'ResponseMessage', {
+    new cdk.CfnOutput(this, 'lex-intent', {
       description: 'The name of the lex intent',
       value: lexIntent.name
     });
