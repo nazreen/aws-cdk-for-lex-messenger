@@ -3,7 +3,8 @@ import cdk = require('@aws-cdk/core');
 import lambda = require('@aws-cdk/aws-lambda');
 import iam = require('@aws-cdk/aws-iam');
 import mrptValue from './mapping_request_template';
-import { MyCustomResource } from './my-custom-resource'; 3
+// import { MyCustomResource } from './my-custom-resource';
+import { CustomLexIntent } from './custom_lex_intent/lex-intent';
 
 // currently Lex is supported in a limited number of regions
 const LEX_REGION = "us-east-1"
@@ -19,11 +20,17 @@ export class CdkStack extends cdk.Stack {
     */
     const lexPolicyStatement = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
-      resources: [`arn:aws:lex:${LEX_REGION}:${ACCOUNT_ID}:bot:*:*`],
+      resources: [`arn:aws:lex:${LEX_REGION}:${ACCOUNT_ID}:bot:*:*`, `arn:aws:lex:${LEX_REGION}:${ACCOUNT_ID}:intent:*:*`],
       actions: ['lex:*'] // TODO: specify to only PostText and create separate Role for the lambda custom resource provider
+    })
+    const logPolicyStatement = new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      resources: ['*'],
+      actions: ['logs:*']
     })
     const policyDocument = new iam.PolicyDocument()
     policyDocument.addStatements(lexPolicyStatement)
+    policyDocument.addStatements(logPolicyStatement)
     const roleProps = {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       inlinePolicies: {
@@ -62,15 +69,21 @@ export class CdkStack extends cdk.Stack {
     /*
      Custom Resource
     */
-    const propsForLambdaProvider = {
-      stackName: STACK_NAME
-    };
-    const resource = new MyCustomResource(this, 'custom-resource-lex-bot', propsForLambdaProvider, webhookHandlerRole);
+    // const propsForLambdaProvider = {
+    //   stackName: STACK_NAME
+    // };
+    // const resource = new MyCustomResource(this, 'custom-resource-lex-bot', propsForLambdaProvider, webhookHandlerRole);
+    const lexIntent = new CustomLexIntent(this, 'custom-lex-intent', { stackName: STACK_NAME }, webhookHandlerRole)
 
     // Publish the custom resource output
+    // new cdk.CfnOutput(this, 'ResponseMessage', {
+    //   description: 'The message that came back from the Custom Resource',
+    //   value: resource.response
+    // });
+
     new cdk.CfnOutput(this, 'ResponseMessage', {
-      description: 'The message that came back from the Custom Resource',
-      value: resource.response
+      description: 'The name of the lex intent',
+      value: lexIntent.name
     });
   }
 }
