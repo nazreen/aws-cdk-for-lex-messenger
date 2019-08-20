@@ -2,16 +2,15 @@ def main(event, context):
     import logging as log
     import cfnresponse
     import boto3
-    lex = boto3.client('lex-models', region_name='us-east-1')
-    log.getLogger().setLevel(log.INFO)
     # create intent
-    
-    intent_name = 'Complain'
-    physical_id = intent_name
-    intent = None
     try:
+        lex = boto3.client('lex-models', region_name='us-east-1')
+        log.getLogger().setLevel(log.INFO)
+        
+        intent_name = event['ResourceProperties']['IntentName']
+        physical_id = intent_name
+        intent = None
         log.info('Input event: %s', event)
-
         
         try:
             # check if already exists

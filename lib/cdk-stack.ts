@@ -73,7 +73,8 @@ export class CdkStack extends cdk.Stack {
     //   stackName: STACK_NAME
     // };
     // const resource = new MyCustomResource(this, 'custom-resource-lex-bot', propsForLambdaProvider, webhookHandlerRole);
-    const lexIntent = new CustomLexIntent(this, 'CustomLexIntent', { stackName: STACK_NAME }, webhookHandlerRole)
+    const squishedStackName = STACK_NAME.replace(/-/g, "")
+    const lexIntent = new CustomLexIntent(this, 'CustomLexIntent', { IntentName: `${squishedStackName}Complain` }, webhookHandlerRole)
 
     // Publish the custom resource output
     // new cdk.CfnOutput(this, 'ResponseMessage', {

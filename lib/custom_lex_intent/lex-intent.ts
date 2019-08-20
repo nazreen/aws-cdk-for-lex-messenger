@@ -8,7 +8,7 @@ import fs = require('fs');
 const providerPath = 'lib/custom_lex_intent/lex-intent-provider.py'
 
 export interface IPropsForCustomLexIntent {
-    stackName: string;
+    IntentName: string;
 }
 
 export class CustomLexIntent extends cdk.Construct {
