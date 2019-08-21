@@ -44,7 +44,7 @@ export class CdkStack extends cdk.Stack {
       Setup Lambda
     */
     const webhookHandler = new lambda.Function(this, 'incoming-message-handler', {
-      code: lambda.Code.asset('lambda'),
+      code: lambda.Code.asset('lambdas/message-handler'),
       handler: 'index.handler',
       timeout: cdk.Duration.seconds(3),
       runtime: lambda.Runtime.NODEJS_10_X,
