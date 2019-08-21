@@ -17,7 +17,7 @@ def main(event, context):
         
         try:
             # check if already exists
-            bot = lex.get_bot(name=bot_name,version='$LATEST')
+            bot = lex.get_bot(name=bot_name,versionOrAlias='$LATEST')
             # if already exists, call CREATE does update,  DELETE does delete
             print('bot already exists')
             if event['RequestType'] in ['Create','Update']:
