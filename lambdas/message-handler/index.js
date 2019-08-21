@@ -21,7 +21,7 @@ exports.handler = async (event) => {
         const queryParams = event.params.querystring;
         const rVerifyToken = queryParams['hub.verify_token']
 
-        if (rVerifyToken === CONGIG.VERIFY_TOKEN) {
+        if (rVerifyToken === CONFIG.VERIFY_TOKEN) {
             const challenge = queryParams['hub.challenge']
             return parseInt(challenge)
         } else {
