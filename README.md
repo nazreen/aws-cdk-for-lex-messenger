@@ -2,7 +2,11 @@
 - FIX: on delete, bot is not deleted. fix the python provider handler for lex bot.
 - separate policies. 1 for webhandler, 1 for lambda providers.
 - update this doc to reflect the now automated lex bot creation
+- add method response template
+- create alias, delete alias
 - consider https://github.com/aws-cloudformation/custom-resource-helper
+- enable cors for both GET and POST /webhook
+- test integration works
 
 # Problem statement
 For chatbot integrations, sometimes, you need to do some preprocessing with a message before it hits Lex. For example, you might be dealing with informal language and need to normalise the message using an external API before sending it over to Lex.
