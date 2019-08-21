@@ -6,6 +6,7 @@ import cdk = require('@aws-cdk/core');
 import fs = require('fs');
 
 const providerPath = 'lib/custom_lex_intent/lex-intent-provider.py'
+const functionName = 'lex-intent-provider'
 
 export interface IPropsForCustomLexIntent {
     IntentName: string;
@@ -18,12 +19,13 @@ export class CustomLexIntent extends cdk.Construct {
         super(scope, id);
 
         const resource = new cfn.CustomResource(this, 'Resource', {
-            provider: cfn.CustomResourceProvider.lambda(new lambda.SingletonFunction(this, 'cfn-provider-for-lex-intent', {
+            provider: cfn.CustomResourceProvider.lambda(new lambda.SingletonFunction(this, functionName, {
                 uuid: 'a6ffed12-b0d3-4ccc-894d-ffa379e109d4',
                 code: new lambda.InlineCode(fs.readFileSync(providerPath, { encoding: 'utf-8' })),
                 handler: 'index.main',
                 timeout: cdk.Duration.seconds(15),
                 runtime: lambda.Runtime.PYTHON_3_7,
+                functionName,
                 role
             })),
             properties: lambdaProps,
