@@ -19,6 +19,7 @@ def main(event, context):
             # check if already exists
             bot = lex.get_bot(name=bot_name,version='$LATEST')
             # if already exists, call CREATE does update,  DELETE does delete
+            print('bot already exists')
             if event['RequestType'] in ['Create','Update']:
                 bot = lex.put_bot(name=bot_name, checksum=bot['checksum'])
                 output_attributes = {
@@ -29,6 +30,7 @@ def main(event, context):
                 output_attributes = {}
         except:
             # if resource does not yet exist, call CREATE does create or DELETE skips delete
+            print('bot does not exist')
             if event['RequestType'] in ['Create','Update']:
                 bot = lex.put_bot(name=bot_name,locale='en-US',childDirected=False)
                 output_attributes = {
